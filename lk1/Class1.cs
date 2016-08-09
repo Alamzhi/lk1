@@ -31,6 +31,7 @@ namespace lk1
             lock (locker)
             {
                 queue.Enqueue(item);
+                Monitor.Pulse(locker);
             }
             autoEvent.Set();
         }
@@ -39,17 +40,17 @@ namespace lk1
         {
             lock (locker)
             {
-                if (queue.Count > 0)
+                if (queue.Count == 0)
                 {
-                    return queue.Dequeue();
+                    // если очередь пуста, то ждем максимум 1 секунду
+                    Monitor.Pulse(locker);
+                    Monitor.Wait(locker, 1000);
                 }
-            }
-            autoEvent.WaitOne();
-            lock (locker)
-            {
                 if (queue.Count > 0)
                 {
-                    return queue.Dequeue();
+                    var t = queue.Dequeue();
+                    Monitor.Pulse(locker);
+                    return t;
                 }
             }
             throw new InvalidOperationException();

@@ -17,10 +17,11 @@ namespace UnitTestProject1
     [TestClass]
     public class UnitTest1
     {
-        static object workerLocker = new object();
-        static int runningPushers = 10;
-        static int runningPopers = 5;
-        static readonly Class1<string> cl = new Class1<string>();
+        private static object workerLocker = new object();
+        private static int runningPushers = 20;
+        private static int runningPopers = 10;
+        private static int maxObjects = 1000;
+        private static readonly Class1<string> cl = new Class1<string>();
 
         [TestMethod]
         public void TestMethod1()
@@ -48,7 +49,7 @@ namespace UnitTestProject1
         {
             if (cl == null) throw new ArgumentNullException("cl");
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < maxObjects; i++)
             {
                 cl.Push(String.Format("push{0}:{1}", instance, i));
             }
